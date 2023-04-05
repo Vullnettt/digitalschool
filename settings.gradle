@@ -1,1 +1,3 @@
 rootProject.name = 'digital_school'
+include 'digitalschool'
+
