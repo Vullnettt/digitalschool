@@ -1,4 +1,4 @@
-package org.zerogravitysolutions.instructor;
+package org.zerogravitysolutions.student;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
@@ -6,30 +6,23 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import org.zerogravitysolutions.commons.BaseEntity;
 import org.zerogravitysolutions.group.GroupEntity;
-import org.zerogravitysolutions.training.TrainingEntity;
 
 import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "instructors")
-public class InstructorEntity extends BaseEntity {
+@Table(name = "students")
+public class StudentEntity extends BaseEntity {
 
     private String firstName;
     private String lastName;
     private String email;
     private String phoneNumber;
-    private String bio;
-    private String facebookProfile;
-    private String linkedinProfile;
+    private String personalNumber;
     private String profilePicture;
 
-    @ManyToMany(mappedBy = "instructors")
-    @JsonIgnoreProperties("instructors")
-    private Set<TrainingEntity> trainings = new HashSet<>();
-
-    @ManyToMany(mappedBy = "instructors")
-    @JsonIgnoreProperties("instructors")
+    @ManyToMany(mappedBy = "students")
+    @JsonIgnoreProperties("students")
     private Set<GroupEntity> groups = new HashSet<>();
 
     public String getFirstName() {
@@ -64,28 +57,12 @@ public class InstructorEntity extends BaseEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public String getBio() {
-        return bio;
+    public String getPersonalNumber() {
+        return personalNumber;
     }
 
-    public void setBio(String bio) {
-        this.bio = bio;
-    }
-
-    public String getFacebookProfile() {
-        return facebookProfile;
-    }
-
-    public void setFacebookProfile(String facebookProfile) {
-        this.facebookProfile = facebookProfile;
-    }
-
-    public String getLinkedinProfile() {
-        return linkedinProfile;
-    }
-
-    public void setLinkedinProfile(String linkedinProfile) {
-        this.linkedinProfile = linkedinProfile;
+    public void setPersonalNumber(String personalNumber) {
+        this.personalNumber = personalNumber;
     }
 
     public String getProfilePicture() {
@@ -94,14 +71,6 @@ public class InstructorEntity extends BaseEntity {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
-    }
-
-    public Set<TrainingEntity> getTrainings() {
-        return trainings;
-    }
-
-    public void setTrainings(Set<TrainingEntity> trainings) {
-        this.trainings = trainings;
     }
 
     public Set<GroupEntity> getGroups() {
