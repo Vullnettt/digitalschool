@@ -18,4 +18,7 @@ public interface SubjectMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     SubjectDto mapEntityToDto(SubjectEntity source);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    SubjectDto mapsEntityToDto(SubjectEntity source, @MappingTarget SubjectDto target );
 }

@@ -1,6 +1,10 @@
 package org.zerogravitysolutions.training;
 
 import org.zerogravitysolutions.commons.BaseDto;
+import org.zerogravitysolutions.subject.SubjectEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class TrainingDto extends BaseDto {
 
@@ -8,6 +12,8 @@ public class TrainingDto extends BaseDto {
     private String description;
     private Double price;
     private String coverImageFileName;
+
+    private Set<SubjectEntity> subjects = new HashSet<>();
 
     public String getTitle() {
         return title;
@@ -39,5 +45,13 @@ public class TrainingDto extends BaseDto {
 
     public void setCoverImageFileName(String coverImageFileName) {
         this.coverImageFileName = coverImageFileName;
+    }
+
+    public Set<SubjectEntity> getSubjects() {
+        return subjects;
+    }
+
+    public void setSubjects(Set<SubjectEntity> subjects) {
+        this.subjects = subjects;
     }
 }

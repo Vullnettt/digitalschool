@@ -1,10 +1,7 @@
 package org.zerogravitysolutions.subject;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.zerogravitysolutions.commons.BaseEntity;
 import org.zerogravitysolutions.training.TrainingEntity;
 

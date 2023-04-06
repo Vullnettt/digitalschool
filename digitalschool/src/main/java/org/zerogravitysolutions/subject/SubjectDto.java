@@ -6,7 +6,7 @@ public class SubjectDto extends BaseDto {
 
     private String title;
     private String description;
-
+    private Long trainingId;
     public String getTitle() {
         return title;
     }
@@ -21,5 +21,13 @@ public class SubjectDto extends BaseDto {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getTrainingId() {
+        return trainingId;
+    }
+
+    public void setTrainingId(Long trainingId) {
+        this.trainingId = trainingId;
     }
 }

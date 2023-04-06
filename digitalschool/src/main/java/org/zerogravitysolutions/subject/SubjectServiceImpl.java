@@ -5,7 +5,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.subject.utils.SubjectMapper;
+import org.zerogravitysolutions.training.TrainingDto;
+import org.zerogravitysolutions.training.TrainingEntity;
+import org.zerogravitysolutions.training.TrainingService;
+import org.zerogravitysolutions.training.utils.TrainingMapper;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 @Service
@@ -13,17 +18,26 @@ public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectRepository subjectRepository;
     private final SubjectMapper subjectMapper;
+    private final TrainingService trainingService;
+    private final TrainingMapper trainingMapper;
 
-    public SubjectServiceImpl(SubjectRepository subjectRepository, SubjectMapper subjectMapper) {
+    public SubjectServiceImpl(SubjectRepository subjectRepository, SubjectMapper subjectMapper, TrainingService trainingService, TrainingMapper trainingMapper) {
         this.subjectRepository = subjectRepository;
         this.subjectMapper = subjectMapper;
+        this.trainingService = trainingService;
+        this.trainingMapper = trainingMapper;
     }
 
     @Override
     public ResponseEntity<SubjectDto> save(SubjectDto subjectDto) {
         SubjectEntity subjectEntity = new SubjectEntity();
+        TrainingEntity trainingEntity = new TrainingEntity();
+        TrainingDto trainingDto = trainingService.findById(subjectDto.getTrainingId()).getBody();
+        subjectEntity.setTraining(trainingMapper.mapDtoToEntityWithEntityReturnType(trainingDto, trainingEntity));
+        subjectEntity.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        subjectEntity.setCreatedBy(1L);
         subjectMapper.mapDtoToEntity(subjectDto, subjectEntity);
-        return ResponseEntity.ok().body(subjectMapper.mapEntityToDto(subjectRepository.save(subjectEntity)));
+        return ResponseEntity.ok().body(subjectMapper.mapsEntityToDto(subjectRepository.save(subjectEntity), subjectDto));
     }
 
     @Override
@@ -42,6 +56,8 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public ResponseEntity<SubjectDto> update(SubjectDto subjectDto) {
         SubjectEntity subjectEntity = new SubjectEntity();
+        subjectEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        subjectEntity.setUpdatedBy(1L);
         subjectMapper.mapDtoToEntity(subjectDto, subjectEntity);
         return ResponseEntity.ok().body(subjectMapper.mapEntityToDto(subjectRepository.save(subjectEntity)));
     }

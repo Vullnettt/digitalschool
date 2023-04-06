@@ -18,4 +18,7 @@ public interface TrainingMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     TrainingDto mapEntityToDto(TrainingEntity source);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    TrainingEntity mapDtoToEntityWithEntityReturnType(TrainingDto source, @MappingTarget TrainingEntity target);
 }
