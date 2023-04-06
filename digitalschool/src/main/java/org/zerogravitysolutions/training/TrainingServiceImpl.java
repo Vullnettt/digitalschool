@@ -44,5 +44,6 @@ public class TrainingServiceImpl implements TrainingService {
     public ResponseEntity<TrainingDto> update(TrainingDto trainingDto) {
         TrainingEntity trainingEntity = new TrainingEntity();
         trainingMapper.mapDtoToEntity(trainingDto, trainingEntity);
-        return ResponseEntity.ok().body(trainingMapper.mapEntityToDto(trainingRepository.save(trainingEntity)));    }
+        return ResponseEntity.ok().body(trainingMapper.mapEntityToDto(trainingRepository.save(trainingEntity)));
+    }
 }

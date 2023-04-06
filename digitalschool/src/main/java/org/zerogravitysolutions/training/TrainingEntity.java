@@ -1,8 +1,12 @@
 package org.zerogravitysolutions.training;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 import org.zerogravitysolutions.commons.BaseEntity;
+import org.zerogravitysolutions.instructor.InstructorEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "trainings")
@@ -12,6 +16,15 @@ public class TrainingEntity extends BaseEntity {
     private String description;
     private String price;
     private String coverImageFileName;
+
+    @ManyToMany
+    @JoinTable (
+            name = "training_instructors",
+            joinColumns = { @JoinColumn(name = "training_id") },
+            inverseJoinColumns = { @JoinColumn(name = "instructor_id") }
+    )
+    @JsonIgnoreProperties("trainings")
+    private Set<InstructorEntity> instructors = new HashSet<>();
 
 
     public String getTitle() {
@@ -44,5 +57,13 @@ public class TrainingEntity extends BaseEntity {
 
     public void setCoverImageFileName(String coverImageFileName) {
         this.coverImageFileName = coverImageFileName;
+    }
+
+    public Set<InstructorEntity> getInstructors() {
+        return instructors;
+    }
+
+    public void setInstructors(Set<InstructorEntity> instructors) {
+        this.instructors = instructors;
     }
 }
