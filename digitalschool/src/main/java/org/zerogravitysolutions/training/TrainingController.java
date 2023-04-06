@@ -25,7 +25,7 @@ public class TrainingController {
     }
 
     @GetMapping(path = "/trainings/{id}")
-    public ResponseEntity<TrainingDto> findById(Long id){
+    public ResponseEntity<TrainingDto> findById(@PathVariable Long id){
         return trainingService.findById(id);
     }
 

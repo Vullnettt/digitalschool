@@ -28,7 +28,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public ResponseEntity<List<SubjectDto>> findAll() {
-        List<SubjectEntity> subjectEntities = subjectRepository.findAllSubjectDeletedAtIsNull();
+        List<SubjectEntity> subjectEntities = subjectRepository.findAll();
         return ResponseEntity.ok().body(subjectEntities.stream().map(subjectEntity -> subjectMapper.mapEntityToDto(subjectEntity)).toList());
     }
 

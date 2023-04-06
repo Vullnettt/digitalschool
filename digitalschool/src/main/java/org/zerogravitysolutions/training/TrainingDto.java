@@ -6,7 +6,7 @@ public class TrainingDto extends BaseDto {
 
     private String title;
     private String description;
-    private String price;
+    private Double price;
     private String coverImageFileName;
 
     public String getTitle() {
@@ -25,11 +25,11 @@ public class TrainingDto extends BaseDto {
         this.description = description;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

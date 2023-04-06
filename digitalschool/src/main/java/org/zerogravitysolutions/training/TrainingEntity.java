@@ -16,7 +16,8 @@ public class TrainingEntity extends BaseEntity {
 
     private String title;
     private String description;
-    private String price;
+    private Double price;
+    @Column(name = "cover_image_filename")
     private String coverImageFileName;
 
     @ManyToMany
@@ -51,11 +52,11 @@ public class TrainingEntity extends BaseEntity {
         this.description = description;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
