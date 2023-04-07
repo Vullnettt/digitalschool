@@ -1,12 +1,18 @@
 package org.zerogravitysolutions.training;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.training.utils.TrainingMapper;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -51,5 +57,41 @@ public class TrainingServiceImpl implements TrainingService {
         trainingEntity.setCreatedBy(1L);
         trainingMapper.mapDtoToEntity(trainingDto, trainingEntity);
         return ResponseEntity.ok().body(trainingMapper.mapEntityToDto(trainingRepository.save(trainingEntity)));
+    }
+
+    @Override
+    public ResponseEntity<TrainingDto> uploadCoverOnStorage(Long id, MultipartFile file) {
+        TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + id + " not found."));
+
+        try{
+            byte[] coverImage = file.getBytes();
+            trainingEntity.setCoverImage(coverImage);
+
+            trainingEntity.setUpdatedBy(1L);
+            trainingEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+            trainingRepository.save(trainingEntity);
+            return ResponseEntity.ok().body(trainingMapper.mapEntityToDto(trainingEntity));
+        } catch (IOException e) {
+
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload training cover image.");
+        }
+    }
+
+    @Override
+    public ResponseEntity<Resource> readCover(Long id) {
+        TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + id + " not found."));
+
+        if(trainingEntity.getCoverImage() != null){
+            ByteArrayResource resource = new ByteArrayResource(trainingEntity.getCoverImage());
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION)
+                    .body(resource);
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to load training cover image for training id: " + id);
+        }
     }
 }

@@ -1,5 +1,6 @@
 package org.zerogravitysolutions.training;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.zerogravitysolutions.commons.BaseEntity;
@@ -19,6 +20,9 @@ public class TrainingEntity extends BaseEntity {
     private Double price;
     @Column(name = "cover_image_filename")
     private String coverImageFileName;
+
+    @JsonIgnore
+    private byte[] coverImage;
 
     @ManyToMany
     @JoinTable (
@@ -66,6 +70,14 @@ public class TrainingEntity extends BaseEntity {
 
     public void setCoverImageFileName(String coverImageFileName) {
         this.coverImageFileName = coverImageFileName;
+    }
+
+    public byte[] getCoverImage() {
+        return coverImage;
+    }
+
+    public void setCoverImage(byte[] coverImage) {
+        this.coverImage = coverImage;
     }
 
     public Set<InstructorEntity> getInstructors() {

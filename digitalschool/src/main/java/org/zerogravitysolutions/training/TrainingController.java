@@ -1,7 +1,9 @@
 package org.zerogravitysolutions.training;
 
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -32,5 +34,15 @@ public class TrainingController {
     @PutMapping(path = "/trainings/{id}")
     public ResponseEntity<TrainingDto> update(@RequestBody TrainingDto trainingDto){
         return trainingService.update(trainingDto);
+    }
+
+    @PostMapping(path = "/trainings/{id}/cover")
+    public ResponseEntity<TrainingDto> uploadCover(@PathVariable Long id, @RequestParam(name = "file")  MultipartFile file){
+        return trainingService.uploadCoverOnStorage(id, file);
+    }
+
+    @GetMapping(path = "/trainings/{id}/cover")
+    public ResponseEntity<Resource> readCover(@PathVariable Long id){
+        return trainingService.readCover(id);
     }
 }
