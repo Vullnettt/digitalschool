@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.zerogravitysolutions.image_storage.ImageSize;
+import org.zerogravitysolutions.image_storage.ImageStorageService;
 import org.zerogravitysolutions.training.utils.TrainingMapper;
 
 import java.io.IOException;
@@ -21,11 +23,13 @@ public class TrainingServiceImpl implements TrainingService {
 
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
+    private final ImageStorageService imageStorageService;
 
     @Autowired
-    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper) {
+    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, ImageStorageService imageStorageService) {
         this.trainingRepository = trainingRepository;
         this.trainingMapper = trainingMapper;
+        this.imageStorageService = imageStorageService;
     }
 
     @Override
@@ -60,7 +64,7 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public ResponseEntity<TrainingDto> uploadCoverOnStorage(Long id, MultipartFile file) {
+    public ResponseEntity<TrainingDto> uploadCover(Long id, MultipartFile file) {
         TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + id + " not found."));
 
@@ -93,5 +97,36 @@ public class TrainingServiceImpl implements TrainingService {
         }else{
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to load training cover image for training id: " + id);
         }
+    }
+
+    @Override
+    public ResponseEntity<TrainingDto> uploadCoverOnStorage(Long id, MultipartFile file) {
+        TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + id + " not found."));
+
+        String fileName = imageStorageService.saveImage(file, trainingEntity.getCoverImageFileName());
+
+        trainingEntity.setCoverImageFileName(fileName);
+        trainingEntity.setUpdatedBy(1L);
+        trainingEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+
+        trainingRepository.save(trainingEntity);
+        trainingEntity.setInstructors(null);
+
+        return ResponseEntity.ok().body(trainingMapper.mapEntityToDto(trainingEntity));
+    }
+
+    @Override
+    public ResponseEntity<Resource> readCoverFromStorage(Long id, ImageSize imageSize) {
+        TrainingEntity trainingEntity = trainingRepository.findById(id)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + id + " not found."));
+
+        String coverImageFileName = trainingEntity.getCoverImageFileName();
+
+        Resource resource = imageStorageService.loadImage(coverImageFileName, imageSize);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.IMAGE_JPEG)
+                .body(resource);
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.zerogravitysolutions.image_storage.ImageSize;
 
 import java.util.List;
 
@@ -38,11 +39,21 @@ public class TrainingController {
 
     @PostMapping(path = "/trainings/{id}/cover")
     public ResponseEntity<TrainingDto> uploadCover(@PathVariable Long id, @RequestParam(name = "file")  MultipartFile file){
-        return trainingService.uploadCoverOnStorage(id, file);
+        return trainingService.uploadCover(id, file);
     }
 
     @GetMapping(path = "/trainings/{id}/cover")
     public ResponseEntity<Resource> readCover(@PathVariable Long id){
         return trainingService.readCover(id);
+    }
+
+    @PostMapping(path = "/trainings/{id}/cover/storage")
+    public ResponseEntity<TrainingDto> uploadCoverOnStorage(@PathVariable Long id, @RequestParam(name = "file")  MultipartFile file){
+        return trainingService.uploadCoverOnStorage(id, file);
+    }
+
+    @GetMapping(path = "/trainings/{id}/cover/storage", params = "size")
+    public ResponseEntity<Resource> readCoverFromStorage(@PathVariable Long id, @RequestParam(name = "size") ImageSize imageSize){
+        return trainingService.readCoverFromStorage(id, imageSize);
     }
 }
