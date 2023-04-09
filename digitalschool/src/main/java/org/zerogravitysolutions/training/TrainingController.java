@@ -61,4 +61,9 @@ public class TrainingController {
     public ResponseEntity<TrainingDto> partialUpdate(@PathVariable Long id, @RequestBody TrainingDto trainingDto){
         return trainingService.partialUpdate(id, trainingDto);
     }
+
+    @PutMapping(path = "/trainings/{trainingId}/instructors/{instructorId}")
+    public ResponseEntity<TrainingDto> addInstructor(@PathVariable Long trainingId, @PathVariable Long instructorId){
+        return trainingService.addInstructor(trainingId, instructorId);
+    }
 }

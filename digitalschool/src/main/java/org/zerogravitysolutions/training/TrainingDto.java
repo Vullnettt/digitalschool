@@ -1,6 +1,8 @@
 package org.zerogravitysolutions.training;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.zerogravitysolutions.commons.BaseDto;
+import org.zerogravitysolutions.instructor.InstructorEntity;
 import org.zerogravitysolutions.subject.SubjectEntity;
 
 import java.util.HashSet;
@@ -14,6 +16,9 @@ public class TrainingDto extends BaseDto {
     private String coverImageFileName;
 
     private Set<SubjectEntity> subjects = new HashSet<>();
+
+    @JsonIgnoreProperties("trainings")
+    private Set<InstructorEntity> instructors = new HashSet<>();
 
     public String getTitle() {
         return title;
@@ -53,5 +58,13 @@ public class TrainingDto extends BaseDto {
 
     public void setSubjects(Set<SubjectEntity> subjects) {
         this.subjects = subjects;
+    }
+
+    public Set<InstructorEntity> getInstructors() {
+        return instructors;
+    }
+
+    public void setInstructors(Set<InstructorEntity> instructors) {
+        this.instructors = instructors;
     }
 }

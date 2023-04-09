@@ -12,6 +12,12 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.image_storage.ImageSize;
 import org.zerogravitysolutions.image_storage.ImageStorageService;
+import org.zerogravitysolutions.instructor.InstructorDto;
+import org.zerogravitysolutions.instructor.InstructorEntity;
+import org.zerogravitysolutions.instructor.InstructorService;
+import org.zerogravitysolutions.instructor.utils.InstructorMapper;
+import org.zerogravitysolutions.training.training_instructors.TrainingInstructor;
+import org.zerogravitysolutions.training.training_instructors.TrainingInstructorRepository;
 import org.zerogravitysolutions.training.utils.TrainingMapper;
 
 import java.io.IOException;
@@ -24,12 +30,19 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingRepository trainingRepository;
     private final TrainingMapper trainingMapper;
     private final ImageStorageService imageStorageService;
+    private final InstructorService instructorService;
+    private final InstructorMapper instructorMapper;
+    private final TrainingInstructorRepository trainingInstructorRepository;
 
     @Autowired
-    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, ImageStorageService imageStorageService) {
+    public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, ImageStorageService imageStorageService, InstructorService instructorService, InstructorMapper instructorMapper,
+                               TrainingInstructorRepository trainingInstructorRepository) {
         this.trainingRepository = trainingRepository;
         this.trainingMapper = trainingMapper;
         this.imageStorageService = imageStorageService;
+        this.instructorService = instructorService;
+        this.instructorMapper = instructorMapper;
+        this.trainingInstructorRepository = trainingInstructorRepository;
     }
 
     @Override
@@ -138,5 +151,20 @@ public class TrainingServiceImpl implements TrainingService {
         trainingEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         trainingEntity.setUpdatedBy(1L);
         return ResponseEntity.ok().body(trainingMapper.mapsEntityToDto(trainingRepository.save(trainingEntity), trainingDto));
+    }
+
+    @Override
+    public ResponseEntity<TrainingDto> addInstructor(Long trainingId, Long instructorId) {
+        TrainingDto trainingDto = new TrainingDto();
+        TrainingEntity trainingEntity = trainingRepository.findByIdAndDeletedAtIsNull(trainingId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + trainingId + " not found"));
+        InstructorEntity instructorEntity = new InstructorEntity();
+        InstructorDto instructorDto = instructorService.findById(instructorId).getBody();
+        TrainingInstructor trainingInstructor = new TrainingInstructor();
+        trainingInstructor.setTraining(trainingEntity);
+        trainingInstructor.setInstructor(instructorMapper.mapDtoToEntityWithEntityReturnType(instructorDto, instructorEntity));
+        trainingInstructorRepository.save(trainingInstructor);
+        trainingMapper.mapEntityToDto(trainingEntity, trainingDto);
+        return ResponseEntity.ok().body(trainingDto);
     }
 }
