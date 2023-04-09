@@ -56,4 +56,9 @@ public class TrainingController {
     public ResponseEntity<Resource> readCoverFromStorage(@PathVariable Long id, @RequestParam(name = "size") ImageSize imageSize){
         return trainingService.readCoverFromStorage(id, imageSize);
     }
+
+    @PatchMapping(path = "/trainings/{id}")
+    public ResponseEntity<TrainingDto> partialUpdate(@PathVariable Long id, @RequestBody TrainingDto trainingDto){
+        return trainingService.partialUpdate(id, trainingDto);
+    }
 }

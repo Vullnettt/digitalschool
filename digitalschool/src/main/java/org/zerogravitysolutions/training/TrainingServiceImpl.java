@@ -129,4 +129,14 @@ public class TrainingServiceImpl implements TrainingService {
                 .contentType(MediaType.IMAGE_JPEG)
                 .body(resource);
     }
+
+    @Override
+    public ResponseEntity<TrainingDto> partialUpdate(Long id, TrainingDto trainingDto) {
+        TrainingEntity trainingEntity = trainingRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + id + " not found"));
+        trainingMapper.mapDtoToEntity(trainingDto, trainingEntity);
+        trainingEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        trainingEntity.setUpdatedBy(1L);
+        return ResponseEntity.ok().body(trainingMapper.mapsEntityToDto(trainingRepository.save(trainingEntity), trainingDto));
+    }
 }

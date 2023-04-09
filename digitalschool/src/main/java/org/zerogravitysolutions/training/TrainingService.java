@@ -24,4 +24,5 @@ public interface TrainingService {
 
     ResponseEntity<Resource> readCoverFromStorage(Long id, ImageSize imageSize);
 
+    ResponseEntity<TrainingDto> partialUpdate(Long id, TrainingDto trainingDto);
 }
