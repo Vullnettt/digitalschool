@@ -1,9 +1,7 @@
 package org.zerogravitysolutions.group;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import jakarta.persistence.*;
-import org.zerogravitysolutions.commons.BaseEntity;
+import org.zerogravitysolutions.commons.BaseDto;
 import org.zerogravitysolutions.instructor.InstructorEntity;
 import org.zerogravitysolutions.student.StudentEntity;
 import org.zerogravitysolutions.training.TrainingEntity;
@@ -12,38 +10,19 @@ import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity
-@Table(name = "groups")
-public class GroupEntity extends BaseEntity {
+public class GroupDto extends BaseDto {
 
     private String title;
     private String description;
     private Timestamp startDate;
     private Timestamp endDate;
+    private Long trainingId;
 
-    @ManyToOne
-    @JoinColumn(name = "training_id")
-    @JsonIgnore
-    private TrainingEntity training;
-
-    @ManyToMany
-    @JoinTable(
-            name = "student_groups",
-            joinColumns = {@JoinColumn(name = "group_id")},
-            inverseJoinColumns = {@JoinColumn(name = "student_id")}
-    )
     @JsonIgnoreProperties("groups")
     private Set<StudentEntity> students = new HashSet<>();
 
-    @ManyToMany
-    @JoinTable(
-            name = "group_instructors",
-            joinColumns = {@JoinColumn(name = "group_id")},
-            inverseJoinColumns = {@JoinColumn(name = "instructor_id")}
-    )
     @JsonIgnoreProperties("groups")
     private Set<InstructorEntity> instructors = new HashSet<>();
-
 
     public String getTitle() {
         return title;
@@ -77,12 +56,12 @@ public class GroupEntity extends BaseEntity {
         this.endDate = endDate;
     }
 
-    public TrainingEntity getTraining() {
-        return training;
+    public Long getTrainingId() {
+        return trainingId;
     }
 
-    public void setTraining(TrainingEntity training) {
-        this.training = training;
+    public void setTrainingId(Long trainingId) {
+        this.trainingId = trainingId;
     }
 
     public Set<StudentEntity> getStudents() {
