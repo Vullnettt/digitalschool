@@ -32,7 +32,7 @@ public class StudentServiceImpl implements StudentService {
 
     @Override
     public ResponseEntity<List<StudentDto>> findAll() {
-        List<StudentEntity> studentEntities = studentRepository.findAll();
+        List<StudentEntity> studentEntities = studentRepository.findByDeletedAtIsNull();
         return ResponseEntity.ok().body(studentEntities.stream().map(studentEntity -> studentMapper.mapEntityToDto(studentEntity)).toList());
     }
 

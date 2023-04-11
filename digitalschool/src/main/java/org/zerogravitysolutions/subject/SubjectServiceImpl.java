@@ -42,7 +42,7 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public ResponseEntity<List<SubjectDto>> findAll() {
-        List<SubjectEntity> subjectEntities = subjectRepository.findAll();
+        List<SubjectEntity> subjectEntities = subjectRepository.findByDeletedAtIsNull();
         return ResponseEntity.ok().body(subjectEntities.stream().map(subjectEntity -> subjectMapper.mapEntityToDto(subjectEntity)).toList());
     }
 
@@ -56,9 +56,12 @@ public class SubjectServiceImpl implements SubjectService {
     @Override
     public ResponseEntity<SubjectDto> update(SubjectDto subjectDto) {
         SubjectEntity subjectEntity = new SubjectEntity();
+        TrainingEntity trainingEntity = new TrainingEntity();
+        TrainingDto trainingDto = trainingService.findById(subjectDto.getTrainingId()).getBody();
+        subjectEntity.setTraining(trainingMapper.mapDtoToEntityWithEntityReturnType(trainingDto, trainingEntity));
         subjectEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
         subjectEntity.setUpdatedBy(1L);
         subjectMapper.mapDtoToEntity(subjectDto, subjectEntity);
-        return ResponseEntity.ok().body(subjectMapper.mapEntityToDto(subjectRepository.save(subjectEntity)));
+        return ResponseEntity.ok().body(subjectMapper.mapsEntityToDto(subjectRepository.save(subjectEntity), subjectDto));
     }
 }

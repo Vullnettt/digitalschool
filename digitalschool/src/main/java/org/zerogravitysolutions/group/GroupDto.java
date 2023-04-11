@@ -24,6 +24,7 @@ public class GroupDto extends BaseDto {
     @JsonIgnoreProperties("groups")
     private Set<InstructorEntity> instructors = new HashSet<>();
 
+
     public String getTitle() {
         return title;
     }

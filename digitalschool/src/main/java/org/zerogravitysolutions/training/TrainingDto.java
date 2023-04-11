@@ -2,6 +2,7 @@ package org.zerogravitysolutions.training;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.zerogravitysolutions.commons.BaseDto;
+import org.zerogravitysolutions.group.GroupEntity;
 import org.zerogravitysolutions.instructor.InstructorEntity;
 import org.zerogravitysolutions.subject.SubjectEntity;
 
@@ -19,6 +20,8 @@ public class TrainingDto extends BaseDto {
 
     @JsonIgnoreProperties("trainings")
     private Set<InstructorEntity> instructors = new HashSet<>();
+
+    private Set<GroupEntity> groups = new HashSet<>();
 
     public String getTitle() {
         return title;
@@ -66,5 +69,13 @@ public class TrainingDto extends BaseDto {
 
     public void setInstructors(Set<InstructorEntity> instructors) {
         this.instructors = instructors;
+    }
+
+    public Set<GroupEntity> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<GroupEntity> groups) {
+        this.groups = groups;
     }
 }

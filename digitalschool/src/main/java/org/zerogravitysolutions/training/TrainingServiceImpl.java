@@ -56,7 +56,7 @@ public class TrainingServiceImpl implements TrainingService {
 
     @Override
     public ResponseEntity<List<TrainingDto>> findAll() {
-        List<TrainingEntity> trainingEntities = trainingRepository.findAll();
+        List<TrainingEntity> trainingEntities = trainingRepository.findByDeletedAtIsNull();
         return ResponseEntity.ok().body(trainingEntities.stream().map(trainingEntity -> trainingMapper.mapEntityToDto(trainingEntity)).toList());
     }
 

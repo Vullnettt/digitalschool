@@ -36,7 +36,7 @@ public class InstructorServiceImpl implements InstructorService{
 
     @Override
     public ResponseEntity<List<InstructorDto>> findAll() {
-        List<InstructorEntity> instructorEntities = instructorRepository.findAll();
+        List<InstructorEntity> instructorEntities = instructorRepository.findByDeletedAtIsNull();
         return ResponseEntity.ok().body(instructorEntities.stream().map(instructorEntity -> instructorMapper.mapEntityToDto(instructorEntity)).toList());
     }
 
