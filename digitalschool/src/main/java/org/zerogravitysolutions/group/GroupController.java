@@ -45,4 +45,9 @@ public class GroupController {
     public ResponseEntity<GroupDto> addStudent(@PathVariable Long groupId, @PathVariable Long studentId){
         return groupService.addStudent(groupId, studentId);
     }
+
+    @PutMapping(path = "/groups/{groupId}/instructors/{instructorId}")
+    public ResponseEntity<GroupDto> addInstructor(@PathVariable Long groupId, @PathVariable Long instructorId){
+        return groupService.addInstructor(groupId, instructorId);
+    }
 }

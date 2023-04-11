@@ -16,4 +16,6 @@ public interface GroupService {
     ResponseEntity<GroupDto> partialUpdate(Long id, GroupDto groupDto);
 
     ResponseEntity<GroupDto> addStudent(Long groupId, Long studentId);
+
+    ResponseEntity<GroupDto> addInstructor(Long groupId, Long instructorId);
 }

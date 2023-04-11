@@ -5,9 +5,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.zerogravitysolutions.group.group_intructors.GroupInstructor;
+import org.zerogravitysolutions.group.group_intructors.GroupInstructorRepository;
 import org.zerogravitysolutions.group.student_groups.StudentGroup;
 import org.zerogravitysolutions.group.student_groups.StudentGroupRepository;
 import org.zerogravitysolutions.group.utils.GroupMapper;
+import org.zerogravitysolutions.instructor.InstructorDto;
+import org.zerogravitysolutions.instructor.InstructorEntity;
+import org.zerogravitysolutions.instructor.InstructorService;
+import org.zerogravitysolutions.instructor.utils.InstructorMapper;
 import org.zerogravitysolutions.student.StudentDto;
 import org.zerogravitysolutions.student.StudentEntity;
 import org.zerogravitysolutions.student.StudentService;
@@ -30,9 +36,12 @@ public class GroupServiceImpl implements GroupService {
     private final StudentService studentService;
     private final StudentMapper studentMapper;
     private final StudentGroupRepository studentGroupRepository;
+    private final InstructorService instructorService;
+    private final InstructorMapper instructorMapper;
+    private final GroupInstructorRepository groupInstructorRepository;
 
     @Autowired
-    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, TrainingService trainingService, TrainingMapper trainingMapper, StudentService studentService, StudentMapper studentMapper, StudentGroupRepository studentGroupRepository) {
+    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, TrainingService trainingService, TrainingMapper trainingMapper, StudentService studentService, StudentMapper studentMapper, StudentGroupRepository studentGroupRepository, InstructorService instructorService, InstructorMapper instructorMapper, GroupInstructorRepository groupInstructorRepository) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.trainingService = trainingService;
@@ -40,6 +49,9 @@ public class GroupServiceImpl implements GroupService {
         this.studentService = studentService;
         this.studentMapper = studentMapper;
         this.studentGroupRepository = studentGroupRepository;
+        this.instructorService = instructorService;
+        this.instructorMapper = instructorMapper;
+        this.groupInstructorRepository = groupInstructorRepository;
     }
 
     @Override
@@ -104,13 +116,34 @@ public class GroupServiceImpl implements GroupService {
         StudentGroup studentGroup = new StudentGroup();
         studentGroup.setGroup(groupEntity);
         studentGroup.setStudent(studentMapper.mapDtoToEntityWithEntityReturnType(studentDto, studentEntity));
-        groupEntity.setCreatedAt(new Timestamp(System.currentTimeMillis()));
-        groupEntity.setCreatedBy(1L);
-        groupEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
-        groupEntity.setUpdatedBy(1L);
+        studentGroup.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        studentGroup.setCreatedBy(1L);
+        studentGroup.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        studentGroup.setUpdatedBy(1L);
         studentGroupRepository.save(studentGroup);
 
-        groupMapper.mapDtoToEntity(groupDto, groupEntity);
-        return ResponseEntity.ok().body(groupMapper.mapsEntityToDto(groupEntity, groupDto));
+        groupMapper.mapsEntityToDto(groupEntity, groupDto);
+        return ResponseEntity.ok().body(groupDto);
+    }
+
+    @Override
+    public ResponseEntity<GroupDto> addInstructor(Long groupId, Long instructorId) {
+        GroupDto groupDto = new GroupDto();
+        InstructorEntity instructorEntity = new InstructorEntity();
+        GroupEntity groupEntity = groupRepository.findByIdAndDeletedAtIsNull(groupId).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with id: " + groupId + " not found"));
+        InstructorDto instructorDto = instructorService.findById(instructorId).getBody();
+
+        GroupInstructor groupInstructor = new GroupInstructor();
+        groupInstructor.setGroup(groupEntity);
+        groupInstructor.setInstructor(instructorMapper.mapDtoToEntityWithEntityReturnType(instructorDto, instructorEntity));
+        groupInstructor.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        groupInstructor.setCreatedBy(1L);
+        groupInstructor.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        groupInstructor.setUpdatedBy(1L);
+        groupInstructorRepository.save(groupInstructor);
+
+        groupMapper.mapsEntityToDto(groupEntity, groupDto);
+        return ResponseEntity.ok().body(groupDto);
     }
 }
