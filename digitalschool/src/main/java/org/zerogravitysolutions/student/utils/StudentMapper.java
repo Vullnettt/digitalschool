@@ -22,4 +22,7 @@ public interface StudentMapper {
 
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     StudentDto mapsEntityToDto(StudentEntity source, @MappingTarget StudentDto target );
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    StudentEntity mapDtoToEntityWithEntityReturnType(StudentDto source, @MappingTarget StudentEntity target);
 }

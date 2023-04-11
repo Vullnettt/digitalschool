@@ -40,4 +40,9 @@ public class GroupController {
     public ResponseEntity<GroupDto> update(@PathVariable Long id, @RequestBody GroupDto groupDto){
         return groupService.partialUpdate(id, groupDto);
     }
+
+    @PutMapping(path = "/groups/{groupId}/students/{studentId}")
+    public ResponseEntity<GroupDto> addStudent(@PathVariable Long groupId, @PathVariable Long studentId){
+        return groupService.addStudent(groupId, studentId);
+    }
 }
