@@ -1,6 +1,5 @@
 package org.zerogravitysolutions.email;
 
-import jakarta.mail.internet.MimeMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,9 +12,11 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 import org.thymeleaf.templateresolver.StringTemplateResolver;
+import org.zerogravitysolutions.email.utils.EmailMapper;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Map;
 
@@ -26,17 +27,23 @@ public class EmailServiceImpl implements EmailService {
     private final JavaMailSender javaMailSender;
     private final SpringTemplateEngine springTemplateEngine;
     private static final Logger LOGGER = LoggerFactory.getLogger(EmailServiceImpl.class);
+    private final EmailMapper emailMapper;
 
     @Autowired
-    public EmailServiceImpl(EmailRepository emailRepository, JavaMailSender javaMailSender, SpringTemplateEngine springTemplateEngine) {
+    public EmailServiceImpl(EmailRepository emailRepository, JavaMailSender javaMailSender, SpringTemplateEngine springTemplateEngine, EmailMapper emailMapper) {
         this.emailRepository = emailRepository;
         this.javaMailSender = javaMailSender;
         this.springTemplateEngine = springTemplateEngine;
+        this.emailMapper = emailMapper;
     }
 
     @Override
-    public ResponseEntity<EmailEntity> save(EmailEntity email) {
-        return ResponseEntity.ok().body(emailRepository.save(email));
+    public ResponseEntity<EmailDto> save(EmailDto emailDto) {
+        EmailEntity emailEntity = new EmailEntity();
+        emailEntity.setCreatedAt(new Timestamp(System.currentTimeMillis()));
+        emailEntity.setCreatedBy(1L);
+        emailMapper.mapDtoToEntity(emailDto, emailEntity);
+        return ResponseEntity.ok().body(emailMapper.mapsEntityToDto(emailRepository.save(emailEntity), emailDto));
     }
 
     @Override

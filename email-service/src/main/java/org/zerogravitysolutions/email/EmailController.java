@@ -39,7 +39,7 @@ public class EmailController {
                                   @RequestParam(name = "templateFile", required = false) MultipartFile templateFile,
                                   @RequestParam(name = "templateData", required = false) String templateData){
 
-        EmailEntity email = new EmailEntity();
+        EmailDto email = new EmailDto();
         try{
             LOGGER.info("Sending email with {} recipients, subject: {}", recipients, subject);
 

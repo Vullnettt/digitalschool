@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface EmailService {
-    ResponseEntity<EmailEntity> save(EmailEntity email);
+    ResponseEntity<EmailDto> save(EmailDto email);
 
     ResponseEntity<?> sendEmail(List<String> validRecipients, String subject, String body, List<File> attachmentsFile, String templateContent, Map<String, Object> templateDataObject);
 }
