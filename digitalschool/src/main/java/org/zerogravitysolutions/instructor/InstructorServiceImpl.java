@@ -102,7 +102,8 @@ public class InstructorServiceImpl implements InstructorService{
         LOGGER.info("Sending email to {}", instructorEntity.getEmail());
         groupInstructorRepository.deleteByInstructorId(id);
         trainingInstructorRepository.deleteByInstructorId(id);
-        LOGGER.info("Delete relationships instructor with groups and trainings");
+        LOGGER.info("Delete relationships between disabled instructor with groups and trainings");
+
         return ResponseEntity.ok().body(instructorMapper.mapEntityToDto(instructorRepository.save(instructorEntity)));
     }
 
@@ -117,10 +118,4 @@ public class InstructorServiceImpl implements InstructorService{
 
         return messageBody;
     }
-
-//    @Override
-//    public Object find(Long id){
-//        return groupInstructorRepository.deleteByInstructorId(id)
-//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id: " + id + " not found."));
-//    }
 }
