@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -78,12 +79,12 @@ public class EmailController {
                     )
             }
     )
-    public ResponseEntity<?> send(@RequestParam(name = "recipients", required = true) String recipients,
-                                  @RequestParam(name = "subject") String subject,
-                                  @RequestParam(name = "body", required = false) String body,
-                                  @RequestParam(name = "attachments", required = false) MultipartFile[] attachments,
-                                  @RequestParam(name = "templateFile", required = false) MultipartFile templateFile,
-                                  @RequestParam(name = "templateData", required = false) String templateData){
+    public ResponseEntity<?> send(@RequestPart(name = "recipients", required = true) String recipients,
+                                  @RequestPart(name = "subject") String subject,
+                                  @RequestPart(name = "body", required = false) String body,
+                                  @RequestPart(name = "attachments", required = false) MultipartFile[] attachments,
+                                  @RequestPart(name = "templateFile", required = false) MultipartFile templateFile,
+                                  @RequestPart(name = "templateData", required = false) String templateData){
 
         EmailDto email = new EmailDto();
         try{
