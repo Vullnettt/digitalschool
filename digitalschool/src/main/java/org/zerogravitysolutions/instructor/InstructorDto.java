@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.ManyToMany;
 import org.zerogravitysolutions.commons.BaseDto;
 import org.zerogravitysolutions.group.GroupEntity;
+import org.zerogravitysolutions.instructor.disable_reason.DisableReason;
 import org.zerogravitysolutions.training.TrainingEntity;
 
 import java.util.HashSet;
@@ -25,6 +26,8 @@ public class InstructorDto extends BaseDto {
 
     @JsonIgnoreProperties("instructors")
     private Set<GroupEntity> groups = new HashSet<>();
+
+    private Set<DisableReason> disableReasons = new HashSet<>();
 
     public String getFirstName() {
         return firstName;
@@ -104,5 +107,13 @@ public class InstructorDto extends BaseDto {
 
     public void setGroups(Set<GroupEntity> groups) {
         this.groups = groups;
+    }
+
+    public Set<DisableReason> getDisableReasons() {
+        return disableReasons;
+    }
+
+    public void setDisableReasons(Set<DisableReason> disableReasons) {
+        this.disableReasons = disableReasons;
     }
 }

@@ -3,9 +3,11 @@ package org.zerogravitysolutions.instructor;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import org.zerogravitysolutions.commons.BaseEntity;
 import org.zerogravitysolutions.group.GroupEntity;
+import org.zerogravitysolutions.instructor.disable_reason.DisableReason;
 import org.zerogravitysolutions.training.TrainingEntity;
 
 import java.util.HashSet;
@@ -31,6 +33,9 @@ public class InstructorEntity extends BaseEntity {
     @ManyToMany(mappedBy = "instructors")
     @JsonIgnoreProperties("instructors")
     private Set<GroupEntity> groups = new HashSet<>();
+
+    @OneToMany(mappedBy = "instructor")
+    private Set<DisableReason> disableReasons = new HashSet<>();
 
     public String getFirstName() {
         return firstName;
@@ -110,5 +115,13 @@ public class InstructorEntity extends BaseEntity {
 
     public void setGroups(Set<GroupEntity> groups) {
         this.groups = groups;
+    }
+
+    public Set<DisableReason> getDisableReasons() {
+        return disableReasons;
+    }
+
+    public void setDisableReasons(Set<DisableReason> disableReasons) {
+        this.disableReasons = disableReasons;
     }
 }
