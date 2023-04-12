@@ -2,9 +2,14 @@ package org.zerogravitysolutions.email;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -31,7 +36,48 @@ public class EmailController {
     }
 
 
-    @PostMapping(path = "/send")
+    @PostMapping(path = "/send", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @Operation(
+            description = "Send Email by providing a mandatory list of as recipients and a subject, optionals message body, attachments, template file, template data",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Send Email",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 200, \"Status\" : \"Ok!\", \"Message\" : \"Email has been sent successfully!\"}"
+                                            )
+                            }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 400, \"Status\" : \"Bad Request!\", \"Message\" : \"Error while sending Email!\"}"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 500, \"Status\" : \"Internal Server Error!\", \"Message\" : \"Internal Server Error!\"}"
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
     public ResponseEntity<?> send(@RequestParam(name = "recipients", required = true) String recipients,
                                   @RequestParam(name = "subject") String subject,
                                   @RequestParam(name = "body", required = false) String body,
@@ -70,11 +116,12 @@ public class EmailController {
             email.setRecipients(recipients);
             email.setSubject(subject);
             emailService.save(email);
-            return emailService.sendEmail(validRecipients, subject, body, attachmentsFile, templateContent, templateDataObject);
+            emailService.sendEmail(validRecipients, subject, body, attachmentsFile, templateContent, templateDataObject);
+            return ResponseEntity.ok().body("Email has been sent successfully!");
         }catch (Exception e){
             LOGGER.error("Error while sending email.");
+            return ResponseEntity.badRequest().body("Error while sending email!");
         }
-        return ResponseEntity.ok().body("Email has been sent successfully!");
     }
 
     private List<String> validateRecipients(List<String> recipients) {
@@ -109,6 +156,4 @@ public class EmailController {
 
         return attachmentsFile;
     }
-
-
 }
