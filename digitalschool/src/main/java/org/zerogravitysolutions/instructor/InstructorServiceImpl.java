@@ -9,9 +9,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.client.EmailFeignClient;
+import org.zerogravitysolutions.group.group_intructors.GroupInstructorRepository;
 import org.zerogravitysolutions.instructor.disable_reason.DisableReason;
 import org.zerogravitysolutions.instructor.disable_reason.DisableReasonRepository;
 import org.zerogravitysolutions.instructor.utils.InstructorMapper;
+import org.zerogravitysolutions.training.training_instructors.TrainingInstructorRepository;
 
 import java.sql.Timestamp;
 import java.util.List;
@@ -25,13 +27,19 @@ public class InstructorServiceImpl implements InstructorService{
     private final DisableReasonRepository disableReasonRepository;
     private static final Logger LOGGER = LoggerFactory.getLogger(InstructorServiceImpl.class);
     private final EmailFeignClient emailFeignClient;
-
+    private final GroupInstructorRepository groupInstructorRepository;
+    private final TrainingInstructorRepository trainingInstructorRepository;
     @Autowired
-    public InstructorServiceImpl(InstructorRepository instructorRepository, InstructorMapper instructorMapper, DisableReasonRepository disableReasonRepository, EmailFeignClient emailFeignClient) {
+    public InstructorServiceImpl(InstructorRepository instructorRepository,
+                                 InstructorMapper instructorMapper,
+                                 DisableReasonRepository disableReasonRepository,
+                                 EmailFeignClient emailFeignClient, GroupInstructorRepository groupInstructorRepository, TrainingInstructorRepository trainingInstructorRepository) {
         this.instructorRepository = instructorRepository;
         this.instructorMapper = instructorMapper;
         this.disableReasonRepository = disableReasonRepository;
         this.emailFeignClient = emailFeignClient;
+        this.groupInstructorRepository = groupInstructorRepository;
+        this.trainingInstructorRepository = trainingInstructorRepository;
     }
 
     @Override
@@ -92,7 +100,9 @@ public class InstructorServiceImpl implements InstructorService{
                 messageBody(id, disableReason), null, null, null);
 
         LOGGER.info("Sending email to {}", instructorEntity.getEmail());
-
+        groupInstructorRepository.deleteByInstructorId(id);
+        trainingInstructorRepository.deleteByInstructorId(id);
+        LOGGER.info("Delete relationships instructor with groups and trainings");
         return ResponseEntity.ok().body(instructorMapper.mapEntityToDto(instructorRepository.save(instructorEntity)));
     }
 
@@ -107,4 +117,10 @@ public class InstructorServiceImpl implements InstructorService{
 
         return messageBody;
     }
+
+//    @Override
+//    public Object find(Long id){
+//        return groupInstructorRepository.deleteByInstructorId(id)
+//                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id: " + id + " not found."));
+//    }
 }
