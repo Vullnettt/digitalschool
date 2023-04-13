@@ -35,4 +35,9 @@ public class StudentController {
     public ResponseEntity<StudentDto> update(@RequestBody StudentDto studentDto){
         return studentService.update(studentDto);
     }
+
+    @PutMapping(path = "/students/{id}/disable")
+    public ResponseEntity<StudentDto> disable(@PathVariable Long id){
+        return studentService.disable(id);
+    }
 }

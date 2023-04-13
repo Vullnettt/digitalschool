@@ -112,7 +112,7 @@ public class InstructorServiceImpl implements InstructorService{
         String messageBody = "Dear: " + instructorEntity.getFirstName() +
                 "\n\nReason why you are suspended from training as instructor: " +
                 "\n" + disableReason.getDisableReason() +
-                "\n\n\n" + "Date And Time of suspended from: " + "\nDate: '" + instructorEntity.getDeletedAt().toLocalDateTime().getYear() + "-" +
+                "\n\n\n" + "Date And Time of deactivation: " + "\nDate: '" + instructorEntity.getDeletedAt().toLocalDateTime().getYear() + "-" +
                 instructorEntity.getDeletedAt().toLocalDateTime().getMonth() + "-" + instructorEntity.getDeletedAt().toLocalDateTime().getDayOfMonth() +"'"+
                 "\nTime: '" + instructorEntity.getDeletedAt().toLocalDateTime().getHour() + ":" + instructorEntity.getDeletedAt().toLocalDateTime().getMinute() + "'";
 

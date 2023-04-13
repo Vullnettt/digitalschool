@@ -12,4 +12,6 @@ public interface StudentService {
     ResponseEntity<StudentDto> findById(Long id);
 
     ResponseEntity<StudentDto> update(StudentDto studentDto);
+
+    ResponseEntity<StudentDto> disable(Long id);
 }

@@ -1,6 +1,11 @@
 package org.zerogravitysolutions.student;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.zerogravitysolutions.commons.BaseDto;
+import org.zerogravitysolutions.group.GroupEntity;
+
+import java.util.HashSet;
+import java.util.Set;
 
 public class StudentDto extends BaseDto {
 
@@ -10,6 +15,9 @@ public class StudentDto extends BaseDto {
     private String phoneNumber;
     private String personalNumber;
     private String profilePicture;
+
+    @JsonIgnoreProperties("students")
+    private Set<GroupEntity> groups = new HashSet<>();
 
     public String getFirstName() {
         return firstName;
@@ -57,5 +65,13 @@ public class StudentDto extends BaseDto {
 
     public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
+    }
+
+    public Set<GroupEntity> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<GroupEntity> groups) {
+        this.groups = groups;
     }
 }
