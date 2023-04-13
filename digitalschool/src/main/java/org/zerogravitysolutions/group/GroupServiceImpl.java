@@ -136,7 +136,7 @@ public class GroupServiceImpl implements GroupService {
 
         emailFeignClient.send("[" + '"' + studentEntity.getEmail() + '"' + "]",
                 "You are assign in group: " + groupEntity.getTitle() + " successfully",
-                messageBody(groupId, studentId), null, null, null);
+                messageBodyForStudent(groupId, studentId), null, null, null);
         groupMapper.mapsEntityToDto(groupEntity, groupDto);
         return ResponseEntity.ok().body(groupDto);
     }
@@ -158,14 +158,31 @@ public class GroupServiceImpl implements GroupService {
         groupInstructor.setUpdatedBy(1L);
         groupInstructorRepository.save(groupInstructor);
 
+        emailFeignClient.send("[" + '"' + instructorEntity.getEmail() + '"' + "]",
+                "You are assign in group: " + groupEntity.getTitle() + " successfully",
+                messageBodyForInstructor(groupId, instructorId), null, null, null);
         groupMapper.mapsEntityToDto(groupEntity, groupDto);
         return ResponseEntity.ok().body(groupDto);
     }
 
-    private String messageBody(Long groupId, Long studentId){
+    private String messageBodyForStudent(Long groupId, Long studentId){
         GroupEntity group = groupRepository.findByIdAndDeletedAtIsNull(groupId).get();
         StudentDto studentDto = studentService.findById(studentId).getBody();
         String messageBody = "Dear: " + studentDto.getFirstName() +
+                "\n\nYou are assign in group " + "'" + group.getTitle() + "'" +
+                " in training " + "'" + group.getTraining().getTitle() + "'" + " successfully" +
+                "\n\n\nGroup Description: \n" + group.getDescription() +
+                "\n\n\n Start Date: " + "'" + group.getStartDate().toLocalDateTime().getYear() +"-"+
+                group.getStartDate().toLocalDateTime().getMonth() +"-"+ group.getStartDate().toLocalDateTime().getDayOfMonth() + "'" +
+                "'" + " \n End Date: " + "'" + group.getEndDate().toLocalDateTime().getYear() +"-"+
+                group.getEndDate().toLocalDateTime().getMonth() +"-"+ group.getEndDate().toLocalDateTime().getDayOfMonth() + "'";
+        return messageBody;
+    }
+
+    private String messageBodyForInstructor(Long groupId, Long instructorId){
+        GroupEntity group = groupRepository.findByIdAndDeletedAtIsNull(groupId).get();
+        InstructorDto instructorDto = instructorService.findById(instructorId).getBody();
+        String messageBody = "Dear: " + instructorDto.getFirstName() +
                 "\n\nYou are assign in group " + "'" + group.getTitle() + "'" +
                 " in training " + "'" + group.getTraining().getTitle() + "'" + " successfully" +
                 "\n\n\nGroup Description: \n" + group.getDescription() +
