@@ -192,4 +192,15 @@ public class GroupServiceImpl implements GroupService {
                 group.getEndDate().toLocalDateTime().getMonth() +"-"+ group.getEndDate().toLocalDateTime().getDayOfMonth() + "'";
         return messageBody;
     }
+
+    @Override
+    public ResponseEntity<GroupDto> disable(Long id) {
+        GroupEntity groupEntity = groupRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with id: " + id + " not found"));
+        groupEntity.setDeletedAt(new Timestamp(System.currentTimeMillis()));
+        groupEntity.setDeletedBy(1L);
+        GroupDto groupDto = new GroupDto();
+        groupMapper.mapDtoToEntity(groupDto, groupEntity);
+        return ResponseEntity.ok().body(groupMapper.mapsEntityToDto(groupRepository.save(groupEntity), groupDto));
+    }
 }

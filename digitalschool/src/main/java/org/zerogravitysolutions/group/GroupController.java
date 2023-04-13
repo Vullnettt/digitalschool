@@ -50,4 +50,9 @@ public class GroupController {
     public ResponseEntity<GroupDto> addInstructor(@PathVariable Long groupId, @PathVariable Long instructorId){
         return groupService.addInstructor(groupId, instructorId);
     }
+
+    @PutMapping(path = "/groups/{id}/disable")
+    public ResponseEntity<GroupDto> disable(@PathVariable Long id){
+        return groupService.disable(id);
+    }
 }

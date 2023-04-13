@@ -18,4 +18,6 @@ public interface GroupService {
     ResponseEntity<GroupDto> addStudent(Long groupId, Long studentId);
 
     ResponseEntity<GroupDto> addInstructor(Long groupId, Long instructorId);
+
+    ResponseEntity<GroupDto> disable(Long id);
 }
