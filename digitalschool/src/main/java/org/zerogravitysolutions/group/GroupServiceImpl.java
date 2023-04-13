@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+import org.zerogravitysolutions.client.EmailFeignClient;
 import org.zerogravitysolutions.group.group_intructors.GroupInstructor;
 import org.zerogravitysolutions.group.group_intructors.GroupInstructorRepository;
 import org.zerogravitysolutions.group.student_groups.StudentGroup;
@@ -39,9 +40,19 @@ public class GroupServiceImpl implements GroupService {
     private final InstructorService instructorService;
     private final InstructorMapper instructorMapper;
     private final GroupInstructorRepository groupInstructorRepository;
-
+    private final EmailFeignClient emailFeignClient;
     @Autowired
-    public GroupServiceImpl(GroupRepository groupRepository, GroupMapper groupMapper, TrainingService trainingService, TrainingMapper trainingMapper, StudentService studentService, StudentMapper studentMapper, StudentGroupRepository studentGroupRepository, InstructorService instructorService, InstructorMapper instructorMapper, GroupInstructorRepository groupInstructorRepository) {
+    public GroupServiceImpl(GroupRepository groupRepository,
+                            GroupMapper groupMapper,
+                            TrainingService trainingService,
+                            TrainingMapper trainingMapper,
+                            StudentService studentService,
+                            StudentMapper studentMapper,
+                            StudentGroupRepository studentGroupRepository,
+                            InstructorService instructorService,
+                            InstructorMapper instructorMapper,
+                            GroupInstructorRepository groupInstructorRepository,
+                            EmailFeignClient emailFeignClient) {
         this.groupRepository = groupRepository;
         this.groupMapper = groupMapper;
         this.trainingService = trainingService;
@@ -52,6 +63,7 @@ public class GroupServiceImpl implements GroupService {
         this.instructorService = instructorService;
         this.instructorMapper = instructorMapper;
         this.groupInstructorRepository = groupInstructorRepository;
+        this.emailFeignClient = emailFeignClient;
     }
 
     @Override
@@ -122,6 +134,9 @@ public class GroupServiceImpl implements GroupService {
         studentGroup.setUpdatedBy(1L);
         studentGroupRepository.save(studentGroup);
 
+        emailFeignClient.send("[" + '"' + studentEntity.getEmail() + '"' + "]",
+                "You are assign in group: " + groupEntity.getTitle() + " successfully",
+                messageBody(groupId, studentId), null, null, null);
         groupMapper.mapsEntityToDto(groupEntity, groupDto);
         return ResponseEntity.ok().body(groupDto);
     }
@@ -145,5 +160,19 @@ public class GroupServiceImpl implements GroupService {
 
         groupMapper.mapsEntityToDto(groupEntity, groupDto);
         return ResponseEntity.ok().body(groupDto);
+    }
+
+    private String messageBody(Long groupId, Long studentId){
+        GroupEntity group = groupRepository.findByIdAndDeletedAtIsNull(groupId).get();
+        StudentDto studentDto = studentService.findById(studentId).getBody();
+        String messageBody = "Dear: " + studentDto.getFirstName() +
+                "\n\nYou are assign in group " + "'" + group.getTitle() + "'" +
+                " in training " + "'" + group.getTraining().getTitle() + "'" + " successfully" +
+                "\n\n\nGroup Description: \n" + group.getDescription() +
+                "\n\n\n Start Date: " + "'" + group.getStartDate().toLocalDateTime().getYear() +"-"+
+                group.getStartDate().toLocalDateTime().getMonth() +"-"+ group.getStartDate().toLocalDateTime().getDayOfMonth() + "'" +
+                "'" + " \n End Date: " + "'" + group.getEndDate().toLocalDateTime().getYear() +"-"+
+                group.getEndDate().toLocalDateTime().getMonth() +"-"+ group.getEndDate().toLocalDateTime().getDayOfMonth() + "'";
+        return messageBody;
     }
 }
