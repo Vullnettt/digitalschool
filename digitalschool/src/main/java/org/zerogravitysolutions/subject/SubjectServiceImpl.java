@@ -64,4 +64,21 @@ public class SubjectServiceImpl implements SubjectService {
         subjectMapper.mapDtoToEntity(subjectDto, subjectEntity);
         return ResponseEntity.ok().body(subjectMapper.mapsEntityToDto(subjectRepository.save(subjectEntity), subjectDto));
     }
+
+    @Override
+    public ResponseEntity<SubjectDto> partialUpdate(Long id, SubjectDto subjectDto) {
+        SubjectEntity subjectEntity = subjectRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Subject with id: " + id + " not found."));
+        subjectEntity.setUpdatedAt(new Timestamp(System.currentTimeMillis()));
+        subjectEntity.setUpdatedBy(1L);
+        subjectMapper.mapDtoToEntity(subjectDto, subjectEntity);
+        return ResponseEntity.ok().body(subjectMapper.mapsEntityToDto(subjectRepository.save(subjectEntity), subjectDto));
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        SubjectEntity subjectEntity = subjectRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Subject with id: " + id + " not found."));
+        subjectRepository.delete(subjectEntity);
+    }
 }

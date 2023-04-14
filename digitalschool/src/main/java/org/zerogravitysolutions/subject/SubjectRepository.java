@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface SubjectRepository extends JpaRepository<SubjectEntity, Long> {
     Optional<SubjectEntity> findByIdAndDeletedAtIsNull(Long id);
     List<SubjectEntity> findByDeletedAtIsNull();
+    void deleteById(Long id);
 }
