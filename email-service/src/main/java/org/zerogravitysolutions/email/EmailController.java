@@ -37,7 +37,7 @@ public class EmailController {
     }
 
 
-    @PostMapping(path = "/send", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/v1/send", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
             description = "Send Email by providing a mandatory list of as recipients and a subject, optionals message body, attachments, template file, template data",
             responses = {

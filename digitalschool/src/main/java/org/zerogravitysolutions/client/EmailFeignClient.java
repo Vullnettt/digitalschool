@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 @FeignClient(value = "email-service", url = "${feign.address.email-service}")
 public interface EmailFeignClient {
 
-    @PostMapping(path = "/send", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path = "/v1/send", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     void send(@RequestPart(name = "recipients", required = true) String recipients,
                                   @RequestPart(name = "subject") String subject,
                                   @RequestPart(name = "body", required = false) String body,
