@@ -1,4 +1,5 @@
 rootProject.name = 'digital_school'
 include 'digitalschool'
 include 'email-service'
+include 'discovery-service'
 
