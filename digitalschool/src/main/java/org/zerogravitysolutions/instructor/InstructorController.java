@@ -22,32 +22,181 @@ public class InstructorController {
         this.instructorService = instructorService;
     }
 
-    @PostMapping(path = "/instructors")
+    @PostMapping(path = "/v1/instructors")
+    @Operation(
+            description = "Save instructor by providing instructor entity fields in request body, " +
+                    "relationships between instructor and other entities are optional",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "The Instructor Saved Successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = InstructorDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 400, \"Status\" : \"Bad Request!\", \"Message\" : \"Bad Request!\"}"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 500, \"Status\" : \"Internal Server Error!\", \"Message\" : \"Internal Server Error!\"}"
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
     public ResponseEntity<InstructorDto> save(@RequestBody InstructorDto instructorDto){
         return instructorService.save(instructorDto);
     }
 
-    @GetMapping(path = "/instructors")
+    @GetMapping(path = "/v1/instructors")
+    @Operation(
+            description = "Find all instructors",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "The Instructors Were All Found Successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = InstructorDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 400, \"Status\" : \"Bad Request!\", \"Message\" : \"Bad Request!\"}"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 500, \"Status\" : \"Internal Server Error!\", \"Message\" : \"Internal Server Error!\"}"
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
     public ResponseEntity<List<InstructorDto>> findAll(){
         return instructorService.findAll();
     }
 
-    @GetMapping(path = "/instructors/{id}")
+    @GetMapping(path = "/v1/instructors/{id}")
+    @Operation(
+            description = "Find Instructor by providing id in path variable",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "The Instructor Found By Id Successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = InstructorDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 400, \"Status\" : \"Bad Request!\", \"Message\" : \"Bad Request!\"}"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 500, \"Status\" : \"Internal Server Error!\", \"Message\" : \"Internal Server Error!\"}"
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
     public ResponseEntity<InstructorDto> findById(@PathVariable Long id){
         return instructorService.findById(id);
     }
 
-    @PutMapping(path = "/instructors/{id}")
+    @PutMapping(path = "/v1/instructors/{id}")
+    @Operation(
+            description = "Update instructor by providing fields of instructor entity in request body and id in path variable",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "The Instructor Updated Successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = InstructorDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 400, \"Status\" : \"Bad Request!\", \"Message\" : \"Bad Request!\"}"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 500, \"Status\" : \"Internal Server Error!\", \"Message\" : \"Internal Server Error!\"}"
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
     public ResponseEntity<InstructorDto> update(@RequestBody InstructorDto instructorDto){
         return instructorService.update(instructorDto);
     }
 
-    @PatchMapping(path = "/instructors/{id}")
+    @PatchMapping(path = "/v1/instructors/{id}")
     public ResponseEntity<InstructorDto> partialUpdate(@PathVariable Long id, @RequestBody InstructorDto instructorDto){
         return instructorService.partialUpdate(id, instructorDto);
     }
 
-    @PutMapping(path = "/instructors/{id}/disable")
+    @PutMapping(path = "/v1/instructors/{id}/disable")
     @Operation(
             description = "Disable Instructor by providing instructor id as path variable and provide disable reason as string in request body",
             responses = {
