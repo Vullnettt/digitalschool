@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
+import org.zerogravitysolutions.client.EmailFeignClient;
 import org.zerogravitysolutions.image_storage.ImageSize;
 import org.zerogravitysolutions.image_storage.ImageStorageService;
 import org.zerogravitysolutions.instructor.InstructorDto;
@@ -33,16 +34,18 @@ public class TrainingServiceImpl implements TrainingService {
     private final InstructorService instructorService;
     private final InstructorMapper instructorMapper;
     private final TrainingInstructorRepository trainingInstructorRepository;
+    private final EmailFeignClient emailFeignClient;
 
     @Autowired
     public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, ImageStorageService imageStorageService, InstructorService instructorService, InstructorMapper instructorMapper,
-                               TrainingInstructorRepository trainingInstructorRepository) {
+                               TrainingInstructorRepository trainingInstructorRepository, EmailFeignClient emailFeignClient) {
         this.trainingRepository = trainingRepository;
         this.trainingMapper = trainingMapper;
         this.imageStorageService = imageStorageService;
         this.instructorService = instructorService;
         this.instructorMapper = instructorMapper;
         this.trainingInstructorRepository = trainingInstructorRepository;
+        this.emailFeignClient = emailFeignClient;
     }
 
     @Override
@@ -165,6 +168,11 @@ public class TrainingServiceImpl implements TrainingService {
         trainingInstructor.setInstructor(instructorMapper.mapDtoToEntityWithEntityReturnType(instructorDto, instructorEntity));
         trainingInstructorRepository.save(trainingInstructor);
         trainingMapper.mapEntityToDto(trainingEntity, trainingDto);
+
+        emailFeignClient.send("[" + '"' + instructorEntity.getEmail() + '"' + "]",
+                "You are assign in training: " + trainingEntity.getTitle() + " successfully",
+                " ", null, null, null);
+
         return ResponseEntity.ok().body(trainingDto);
     }
 }
