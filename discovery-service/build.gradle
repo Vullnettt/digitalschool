@@ -17,9 +17,9 @@ ext {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-webflux:3.0.4'
+    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-server:4.0.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:3.0.4'
 }
 
 dependencyManagement {
