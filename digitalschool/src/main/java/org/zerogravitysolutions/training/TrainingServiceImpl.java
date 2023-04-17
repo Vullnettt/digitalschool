@@ -3,6 +3,9 @@ package org.zerogravitysolutions.training;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.client.EmailFeignClient;
+import org.zerogravitysolutions.group.GroupEntity;
 import org.zerogravitysolutions.image_storage.ImageSize;
 import org.zerogravitysolutions.image_storage.ImageStorageService;
 import org.zerogravitysolutions.instructor.InstructorDto;
@@ -23,7 +27,7 @@ import org.zerogravitysolutions.training.utils.TrainingMapper;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.List;
+import java.util.*;
 
 @Service
 public class TrainingServiceImpl implements TrainingService {
@@ -174,5 +178,33 @@ public class TrainingServiceImpl implements TrainingService {
                 " ", null, null, null);
 
         return ResponseEntity.ok().body(trainingDto);
+    }
+
+    @Override
+    public Page<TrainingDto> findAllPageable(Pageable pageable) {
+        Page<TrainingEntity> trainingEntityPage = trainingRepository.findAllByDeletedAtIsNull(pageable);
+
+        List<TrainingEntity> trainingEntities = trainingEntityPage.getContent();
+        List<TrainingDto> trainingDtos = new ArrayList<>();
+
+        trainingEntities.forEach(trainingEntity -> {
+            TrainingDto trainingDto = new TrainingDto();
+            trainingMapper.mapEntityToDto(trainingEntity, trainingDto);
+            trainingDtos.add(trainingDto);
+        });
+        return new PageImpl<>(trainingDtos);
+    }
+
+    public static Map<String, Object> convertToResponse(Page<TrainingDto> page) {
+
+        Map<String, Object> response = new HashMap<>();
+
+        response.put("trainings", page.getContent());
+        response.put("current-page", page.getNumber());
+        response.put("total-items", page.getTotalElements());
+        response.put("total-pages", page.getTotalPages());
+        response.put("last_page", page.isLast());
+
+        return response;
     }
 }

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import org.springframework.core.io.Resource;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -435,5 +436,47 @@ public class TrainingController {
     )
     public ResponseEntity<TrainingDto> addInstructor(@PathVariable Long trainingId, @PathVariable Long instructorId){
         return trainingService.addInstructor(trainingId, instructorId);
+    }
+
+    @GetMapping(path = "/v1/trainings/page")
+    @Operation(
+            description = "Find all pageable trainings",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "The Training Were Found Successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = TrainingDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 400, \"Status\" : \"Bad Request!\", \"Message\" : \"Bad Request!\"}"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 500, \"Status\" : \"Internal Server Error!\", \"Message\" : \"Internal Server Error!\"}"
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<?> findAllPageable(Pageable pageable){
+        return ResponseEntity.ok(TrainingServiceImpl.convertToResponse(trainingService.findAllPageable(pageable)));
     }
 }
