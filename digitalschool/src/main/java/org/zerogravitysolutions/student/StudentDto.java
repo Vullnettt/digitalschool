@@ -1,5 +1,6 @@
 package org.zerogravitysolutions.student;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.zerogravitysolutions.commons.BaseDto;
 import org.zerogravitysolutions.group.GroupEntity;
@@ -14,6 +15,8 @@ public class StudentDto extends BaseDto {
     private String email;
     private String phoneNumber;
     private String personalNumber;
+
+    @JsonIgnore
     private byte[] profilePicture;
 
     @JsonIgnoreProperties("students")

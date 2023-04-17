@@ -15,6 +15,7 @@ public class TrainingDto extends BaseDto {
     private String description;
     private Double price;
     private String coverImageFileName;
+    private long studentCount;
 
     private Set<SubjectEntity> subjects = new HashSet<>();
 
@@ -61,6 +62,14 @@ public class TrainingDto extends BaseDto {
 
     public void setSubjects(Set<SubjectEntity> subjects) {
         this.subjects = subjects;
+    }
+
+    public long getStudentCount() {
+        return studentCount;
+    }
+
+    public void setStudentCount(long studentCount) {
+        this.studentCount = studentCount;
     }
 
     public Set<InstructorEntity> getInstructors() {

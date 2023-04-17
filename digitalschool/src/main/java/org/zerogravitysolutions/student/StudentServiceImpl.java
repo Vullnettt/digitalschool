@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.client.EmailFeignClient;
+import org.zerogravitysolutions.group.GroupEntity;
 import org.zerogravitysolutions.group.student_groups.StudentGroupRepository;
 import org.zerogravitysolutions.student.utils.StudentMapper;
 
@@ -18,6 +19,7 @@ import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Service
 public class StudentServiceImpl implements StudentService {
@@ -150,5 +152,10 @@ public class StudentServiceImpl implements StudentService {
         }else{
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to load student profile picture image for training id: " + id);
         }
+    }
+
+    @Override
+    public long countByGroupsIn(Set<GroupEntity> groupEntitySet) {
+        return studentRepository.countByGroupsIn(groupEntitySet);
     }
 }

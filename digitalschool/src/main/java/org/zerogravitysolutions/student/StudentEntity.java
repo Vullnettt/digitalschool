@@ -1,5 +1,6 @@
 package org.zerogravitysolutions.student;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
@@ -24,6 +25,8 @@ public class StudentEntity extends BaseEntity {
     private String email;
     private String phoneNumber;
     private String personalNumber;
+
+    @JsonIgnore
     private byte[] profilePicture;
 
     @ManyToMany(mappedBy = "students")

@@ -21,6 +21,7 @@ import org.zerogravitysolutions.instructor.InstructorDto;
 import org.zerogravitysolutions.instructor.InstructorEntity;
 import org.zerogravitysolutions.instructor.InstructorService;
 import org.zerogravitysolutions.instructor.utils.InstructorMapper;
+import org.zerogravitysolutions.student.StudentService;
 import org.zerogravitysolutions.training.training_instructors.TrainingInstructor;
 import org.zerogravitysolutions.training.training_instructors.TrainingInstructorRepository;
 import org.zerogravitysolutions.training.utils.TrainingMapper;
@@ -39,10 +40,11 @@ public class TrainingServiceImpl implements TrainingService {
     private final InstructorMapper instructorMapper;
     private final TrainingInstructorRepository trainingInstructorRepository;
     private final EmailFeignClient emailFeignClient;
+    private final StudentService studentService;
 
     @Autowired
     public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, ImageStorageService imageStorageService, InstructorService instructorService, InstructorMapper instructorMapper,
-                               TrainingInstructorRepository trainingInstructorRepository, EmailFeignClient emailFeignClient) {
+                               TrainingInstructorRepository trainingInstructorRepository, EmailFeignClient emailFeignClient, StudentService studentService) {
         this.trainingRepository = trainingRepository;
         this.trainingMapper = trainingMapper;
         this.imageStorageService = imageStorageService;
@@ -50,6 +52,7 @@ public class TrainingServiceImpl implements TrainingService {
         this.instructorMapper = instructorMapper;
         this.trainingInstructorRepository = trainingInstructorRepository;
         this.emailFeignClient = emailFeignClient;
+        this.studentService = studentService;
     }
 
     @Override
@@ -188,8 +191,13 @@ public class TrainingServiceImpl implements TrainingService {
         List<TrainingDto> trainingDtos = new ArrayList<>();
 
         trainingEntities.forEach(trainingEntity -> {
+            Set<GroupEntity> groupEntities = trainingEntity.getGroups();
+            long studentCount = studentService.countByGroupsIn(groupEntities);
+
             TrainingDto trainingDto = new TrainingDto();
             trainingMapper.mapEntityToDto(trainingEntity, trainingDto);
+            trainingDto.setStudentCount(studentCount);
+
             trainingDtos.add(trainingDto);
         });
         return new PageImpl<>(trainingDtos);
