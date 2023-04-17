@@ -1,14 +1,20 @@
 package org.zerogravitysolutions.student;
 
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.client.EmailFeignClient;
 import org.zerogravitysolutions.group.student_groups.StudentGroupRepository;
 import org.zerogravitysolutions.student.utils.StudentMapper;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -113,5 +119,36 @@ public class StudentServiceImpl implements StudentService {
                 "\nYou was disabled for: " + hour + ":" + minute + ":" + second;
 
         return messageBody;
+    }
+
+    @Override
+    public ResponseEntity<StudentDto> uploadProfilePicture(Long id, MultipartFile file){
+        StudentEntity studentEntity = studentRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with id: " + id + " not found"));
+        try{
+            byte[] profilePicture = file.getBytes();
+            studentEntity.setProfilePicture(profilePicture);
+            studentRepository.save(studentEntity);
+            return ResponseEntity.ok().body(studentMapper.mapEntityToDto(studentEntity));
+        }catch (IOException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload student profile picture.");
+        }
+    }
+
+    @Override
+    public ResponseEntity<Resource> readProfilePicture(Long id) {
+        StudentEntity studentEntity = studentRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with id: " + id + " not found"));
+
+        if(studentEntity.getProfilePicture() != null){
+            ByteArrayResource resource = new ByteArrayResource(studentEntity.getProfilePicture());
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION)
+                    .body(resource);
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to load student profile picture image for training id: " + id);
+        }
     }
 }

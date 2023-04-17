@@ -14,7 +14,7 @@ public class StudentDto extends BaseDto {
     private String email;
     private String phoneNumber;
     private String personalNumber;
-    private String profilePicture;
+    private byte[] profilePicture;
 
     @JsonIgnoreProperties("students")
     private Set<GroupEntity> groups = new HashSet<>();
@@ -59,11 +59,11 @@ public class StudentDto extends BaseDto {
         this.personalNumber = personalNumber;
     }
 
-    public String getProfilePicture() {
+    public byte[] getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
     }
 

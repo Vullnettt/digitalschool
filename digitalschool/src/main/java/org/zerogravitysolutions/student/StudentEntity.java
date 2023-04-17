@@ -19,7 +19,7 @@ public class StudentEntity extends BaseEntity {
     private String email;
     private String phoneNumber;
     private String personalNumber;
-    private String profilePicture;
+    private byte[] profilePicture;
 
     @ManyToMany(mappedBy = "students")
     @JsonIgnoreProperties("students")
@@ -65,11 +65,11 @@ public class StudentEntity extends BaseEntity {
         this.personalNumber = personalNumber;
     }
 
-    public String getProfilePicture() {
+    public byte[] getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
     }
 

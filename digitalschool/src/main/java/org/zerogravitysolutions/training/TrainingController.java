@@ -236,7 +236,7 @@ public class TrainingController {
 
     @GetMapping(path = "/v1/trainings/{id}/cover")
     @Operation(
-            description = "Find cover by providing instructor id",
+            description = "Find cover by providing training id",
             responses = {
                     @ApiResponse(
                             responseCode = "200",
