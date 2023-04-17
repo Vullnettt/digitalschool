@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
 import org.zerogravitysolutions.commons.BaseEntity;
 import org.zerogravitysolutions.group.GroupEntity;
 
@@ -16,6 +18,9 @@ public class StudentEntity extends BaseEntity {
 
     private String firstName;
     private String lastName;
+
+    @Email(message = "Email is not validate", regexp = "[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,3}",
+            flags = Pattern.Flag.CASE_INSENSITIVE)
     private String email;
     private String phoneNumber;
     private String personalNumber;

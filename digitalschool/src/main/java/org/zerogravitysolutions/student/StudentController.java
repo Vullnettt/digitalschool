@@ -358,6 +358,4 @@ public class StudentController {
     public ResponseEntity<Resource> readProfilePicture(@PathVariable Long id){
         return studentService.readProfilePicture(id);
     }
-
-    //upload profile picture and when student is saved enable just with %@gmail.com email
 }
