@@ -10,6 +10,7 @@ import org.zerogravitysolutions.group.student_groups.StudentGroupRepository;
 import org.zerogravitysolutions.student.utils.StudentMapper;
 
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -68,17 +69,48 @@ public class StudentServiceImpl implements StudentService {
         studentGroupRepository.deleteByStudentId(id);
 
         emailFeignClient.send("[" + '"' + studentEntity.getEmail() + '"' + "]", "You are disabled from training",
-                messageBody(id), null, null, null);
+                messageBodyDisable(id), null, null, null);
         return ResponseEntity.ok().body(studentMapper.mapEntityToDto(studentRepository.save(studentEntity)));
     }
 
-    private String messageBody(Long id){
+    private String messageBodyDisable(Long id){
         StudentEntity studentEntity = studentRepository.findById(id).get();
         String messageBody = "Dear: " + studentEntity.getFirstName() +
                 "\n\nYou are a deactivated student, you are removed from all groups, you cannot apply to groups until you are activated by admin\n " +
                 "\n\n\n" + "Date And Time of deactivation: " + "\nDate: '" + studentEntity.getDeletedAt().toLocalDateTime().getYear() + "-" +
                 studentEntity.getDeletedAt().toLocalDateTime().getMonth() + "-" + studentEntity.getDeletedAt().toLocalDateTime().getDayOfMonth() +"'"+
                 "\nTime: '" + studentEntity.getDeletedAt().toLocalDateTime().getHour() + ":" + studentEntity.getDeletedAt().toLocalDateTime().getMinute() + "'";
+
+        return messageBody;
+    }
+
+    @Override
+    public ResponseEntity<?> enable(Long id) {
+        StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with id: " + id + " not found"));
+        if(studentEntity.getDeletedAt() == null || studentEntity.getDeletedBy() == null){
+            return ResponseEntity.ok().body("Email is already enabled!");
+        }
+        emailFeignClient.send("[" + '"' + studentEntity.getEmail() + '"' + "]", "You are disabled from training",
+                messageBodyEnable(id), null, null, null);
+
+        studentEntity.setDeletedAt(null);
+        studentEntity.setDeletedBy(null);
+
+        return ResponseEntity.ok().body(studentMapper.mapEntityToDto(studentRepository.save(studentEntity)));
+    }
+
+    private String messageBodyEnable(Long id){
+        StudentEntity studentEntity = studentRepository.findById(id).get();
+        Long hour = Long.valueOf(LocalDateTime.now().getHour() - studentEntity.getDeletedAt().toLocalDateTime().getHour());;
+        Long minute = Long.valueOf(LocalDateTime.now().getMinute() - studentEntity.getDeletedAt().toLocalDateTime().getMinute());
+        Long second = Long.valueOf(LocalDateTime.now().getSecond() - studentEntity.getDeletedAt().toLocalDateTime().getSecond());;
+        String now = String.valueOf("Date: " + LocalDateTime.now().getYear() + "-" + LocalDateTime.now().getMonth() + "-" + LocalDateTime.now().getDayOfMonth() +
+                "  Time: " + LocalDateTime.now().getHour() + ":" + LocalDateTime.now().getMinute() + ":" + LocalDateTime.now().getSecond());
+        String messageBody = "Dear: " + studentEntity.getFirstName() +
+                "\n\nYou are a enabled student\n " +
+                "\nEnabled in:" + now +
+                "\nYou was disabled for: " + hour + ":" + minute + ":" + second;
 
         return messageBody;
     }

@@ -231,7 +231,7 @@ public class SubjectController {
         return subjectService.partialUpdate(id, subjectDto);
     }
 
-    @DeleteMapping(path = "/v1/trainings/{id}")
+    @DeleteMapping(path = "/v1/subjects/{id}")
     @Operation(
             description = "Delete subject by providing id in path",
             responses = {

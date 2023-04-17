@@ -14,4 +14,6 @@ public interface StudentService {
     ResponseEntity<StudentDto> update(StudentDto studentDto);
 
     ResponseEntity<StudentDto> disable(Long id);
+
+    ResponseEntity<?> enable(Long id);
 }
