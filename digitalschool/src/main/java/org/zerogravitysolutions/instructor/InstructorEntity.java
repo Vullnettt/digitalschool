@@ -1,5 +1,6 @@
 package org.zerogravitysolutions.instructor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.Entity;
 import jakarta.persistence.ManyToMany;
@@ -29,7 +30,9 @@ public class InstructorEntity extends BaseEntity {
     private String bio;
     private String facebookProfile;
     private String linkedinProfile;
-    private String profilePicture;
+
+    @JsonIgnore
+    private byte[] profilePicture;
 
     @ManyToMany(mappedBy = "instructors")
     @JsonIgnoreProperties("instructors")
@@ -98,11 +101,11 @@ public class InstructorEntity extends BaseEntity {
         this.linkedinProfile = linkedinProfile;
     }
 
-    public String getProfilePicture() {
+    public byte[] getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
     }
 

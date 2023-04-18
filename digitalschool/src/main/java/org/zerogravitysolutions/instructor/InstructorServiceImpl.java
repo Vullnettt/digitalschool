@@ -3,10 +3,15 @@ package org.zerogravitysolutions.instructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.client.EmailFeignClient;
 import org.zerogravitysolutions.group.group_intructors.GroupInstructorRepository;
@@ -15,6 +20,7 @@ import org.zerogravitysolutions.instructor.disable_reason.DisableReasonRepositor
 import org.zerogravitysolutions.instructor.utils.InstructorMapper;
 import org.zerogravitysolutions.training.training_instructors.TrainingInstructorRepository;
 
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 
@@ -117,5 +123,36 @@ public class InstructorServiceImpl implements InstructorService{
                 "\nTime: '" + instructorEntity.getDeletedAt().toLocalDateTime().getHour() + ":" + instructorEntity.getDeletedAt().toLocalDateTime().getMinute() + "'";
 
         return messageBody;
+    }
+
+    @Override
+    public ResponseEntity<InstructorDto> uploadProfilePicture(Long id, MultipartFile file) {
+        InstructorEntity instructorEntity = instructorRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id: " + id + " not found"));
+        try{
+            byte[] profilePicture = file.getBytes();
+            instructorEntity.setProfilePicture(profilePicture);
+            instructorRepository.save(instructorEntity);
+            return ResponseEntity.ok().body(instructorMapper.mapEntityToDto(instructorEntity));
+        }catch (IOException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to upload student profile picture.");
+        }
+    }
+
+    @Override
+    public ResponseEntity<Resource> readProfilePicture(Long id) {
+        InstructorEntity instructorEntity = instructorRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id: " + id + " not found"));
+
+        if(instructorEntity.getProfilePicture() != null){
+            ByteArrayResource resource = new ByteArrayResource(instructorEntity.getProfilePicture());
+
+            return ResponseEntity.ok()
+                    .contentType(MediaType.IMAGE_JPEG)
+                    .header(HttpHeaders.CONTENT_DISPOSITION)
+                    .body(resource);
+        }else{
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to load instructor profile picture image for student id: " + id);
+        }
     }
 }

@@ -150,7 +150,7 @@ public class StudentServiceImpl implements StudentService {
                     .header(HttpHeaders.CONTENT_DISPOSITION)
                     .body(resource);
         }else{
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to load student profile picture image for training id: " + id);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to load student profile picture image for student id: " + id);
         }
     }
 

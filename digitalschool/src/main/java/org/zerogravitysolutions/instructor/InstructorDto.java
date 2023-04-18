@@ -1,5 +1,6 @@
 package org.zerogravitysolutions.instructor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.ManyToMany;
 import org.zerogravitysolutions.commons.BaseDto;
@@ -19,7 +20,9 @@ public class InstructorDto extends BaseDto {
     private String bio;
     private String facebookProfile;
     private String linkedinProfile;
-    private String profilePicture;
+
+    @JsonIgnore
+    private byte[] profilePicture;
 
     @JsonIgnoreProperties("instructors")
     private Set<TrainingEntity> trainings = new HashSet<>();
@@ -85,11 +88,11 @@ public class InstructorDto extends BaseDto {
         this.linkedinProfile = linkedinProfile;
     }
 
-    public String getProfilePicture() {
+    public byte[] getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
     }
 
