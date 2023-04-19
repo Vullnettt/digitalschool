@@ -30,7 +30,7 @@ public interface TrainingService {
 
     ResponseEntity<TrainingDto> addInstructor(Long trainingId, Long instructorId);
 
-    Page<TrainingDto> findAllPageable(Pageable pageable);
+    Page<TrainingDtoPageable> findAllPageable(Pageable pageable);
 
     ResponseEntity<TrainingDto> disable(Long id);
 

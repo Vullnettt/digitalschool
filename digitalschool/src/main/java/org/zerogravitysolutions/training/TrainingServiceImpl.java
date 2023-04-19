@@ -192,18 +192,18 @@ public class TrainingServiceImpl implements TrainingService {
     }
 
     @Override
-    public Page<TrainingDto> findAllPageable(Pageable pageable) {
+    public Page<TrainingDtoPageable> findAllPageable(Pageable pageable) {
         Page<TrainingEntity> trainingEntityPage = trainingRepository.findAllByDeletedAtIsNull(pageable);
 
         List<TrainingEntity> trainingEntities = trainingEntityPage.getContent();
-        List<TrainingDto> trainingDtos = new ArrayList<>();
+        List<TrainingDtoPageable> trainingDtos = new ArrayList<>();
 
         trainingEntities.forEach(trainingEntity -> {
             Set<GroupEntity> groupEntities = trainingEntity.getGroups();
             long studentCount = studentService.countByGroupsIn(groupEntities);
 
-            TrainingDto trainingDto = new TrainingDto();
-            trainingMapper.mapEntityToDto(trainingEntity, trainingDto);
+            TrainingDtoPageable trainingDto = new TrainingDtoPageable();
+            trainingMapper.mapEntityToDtoPageAble(trainingEntity, trainingDto);
             trainingDto.setStudentCount(studentCount);
 
             trainingDtos.add(trainingDto);
@@ -211,7 +211,7 @@ public class TrainingServiceImpl implements TrainingService {
         return new PageImpl<>(trainingDtos);
     }
 
-    public static Map<String, Object> convertToResponse(Page<TrainingDto> page) {
+    public static Map<String, Object> convertToResponse(Page<TrainingDtoPageable> page) {
 
         Map<String, Object> response = new HashMap<>();
 
