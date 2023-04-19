@@ -11,5 +11,4 @@ public interface TrainingRepository extends JpaRepository<TrainingEntity, Long> 
     Optional<TrainingEntity> findByIdAndDeletedAtIsNull(Long id);
     List<TrainingEntity> findByDeletedAtIsNull();
     Page<TrainingEntity> findAllByDeletedAtIsNull(Pageable pageable);
-
 }

@@ -479,4 +479,46 @@ public class TrainingController {
     public ResponseEntity<?> findAllPageable(Pageable pageable){
         return ResponseEntity.ok(TrainingServiceImpl.convertToResponse(trainingService.findAllPageable(pageable)));
     }
+
+    @PutMapping(path = "/v1/trainings/{id}/disable")
+    @Operation(
+            description = "Disable training by providing id in path",
+            responses = {
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "The Training Disabled Successfully",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    schema = @Schema(implementation = TrainingDto.class)
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "400",
+                            description = "Bad Request",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 400, \"Status\" : \"Bad Request!\", \"Message\" : \"Not Found!\"}"
+                                            )
+                                    }
+                            )
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Internal Server Error",
+                            content = @Content(
+                                    mediaType = "application/json",
+                                    examples ={
+                                            @ExampleObject(
+                                                    value = "{\"code\" : 500, \"Status\" : \"Internal Server Error!\", \"Message\" : \"Internal Server Error!\"}"
+                                            )
+                                    }
+                            )
+                    )
+            }
+    )
+    public ResponseEntity<TrainingDto> disable(@PathVariable Long id){
+        return trainingService.disable(id);
+    }
 }

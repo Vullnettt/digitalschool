@@ -97,7 +97,7 @@ public class StudentServiceImpl implements StudentService {
         StudentEntity studentEntity = studentRepository.findById(id).orElseThrow(() ->
                 new ResponseStatusException(HttpStatus.NOT_FOUND, "Student with id: " + id + " not found"));
         if(studentEntity.getDeletedAt() == null || studentEntity.getDeletedBy() == null){
-            return ResponseEntity.ok().body("Email is already enabled!");
+            return ResponseEntity.ok().body("Student is already enabled!");
         }
         emailFeignClient.send("[" + '"' + studentEntity.getEmail() + '"' + "]", "You are disabled from training",
                 messageBodyEnable(id), null, null, null);

@@ -1,8 +1,10 @@
 package org.zerogravitysolutions.training;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
+import org.springframework.data.annotation.Reference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -11,10 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.client.EmailFeignClient;
 import org.zerogravitysolutions.group.GroupEntity;
+import org.zerogravitysolutions.group.GroupService;
 import org.zerogravitysolutions.image_storage.ImageSize;
 import org.zerogravitysolutions.image_storage.ImageStorageService;
 import org.zerogravitysolutions.instructor.InstructorDto;
@@ -31,6 +35,7 @@ import java.sql.Timestamp;
 import java.util.*;
 
 @Service
+@Transactional
 public class TrainingServiceImpl implements TrainingService {
 
     private final TrainingRepository trainingRepository;
@@ -41,10 +46,12 @@ public class TrainingServiceImpl implements TrainingService {
     private final TrainingInstructorRepository trainingInstructorRepository;
     private final EmailFeignClient emailFeignClient;
     private final StudentService studentService;
+    @Reference(value = GroupService.class)
+    private final GroupService groupService;
 
     @Autowired
     public TrainingServiceImpl(TrainingRepository trainingRepository, TrainingMapper trainingMapper, ImageStorageService imageStorageService, InstructorService instructorService, InstructorMapper instructorMapper,
-                               TrainingInstructorRepository trainingInstructorRepository, EmailFeignClient emailFeignClient, StudentService studentService) {
+                               TrainingInstructorRepository trainingInstructorRepository, EmailFeignClient emailFeignClient, StudentService studentService, @Lazy GroupService groupService) {
         this.trainingRepository = trainingRepository;
         this.trainingMapper = trainingMapper;
         this.imageStorageService = imageStorageService;
@@ -53,6 +60,7 @@ public class TrainingServiceImpl implements TrainingService {
         this.trainingInstructorRepository = trainingInstructorRepository;
         this.emailFeignClient = emailFeignClient;
         this.studentService = studentService;
+        this.groupService = groupService;
     }
 
     @Override
@@ -214,5 +222,23 @@ public class TrainingServiceImpl implements TrainingService {
         response.put("last_page", page.isLast());
 
         return response;
+    }
+
+    @Override
+    public ResponseEntity<TrainingDto> disable(Long id) {
+        TrainingEntity trainingEntity = trainingRepository.findByIdAndDeletedAtIsNull(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + id + " not found"));
+        TrainingDto trainingDto = new TrainingDto();
+        trainingEntity.setDeletedAt(new Timestamp(System.currentTimeMillis()));
+        trainingEntity.setDeletedBy(1L);
+
+        for(GroupEntity groupEntity : trainingEntity.getGroups()){
+            if(groupEntity.getDeletedAt() == null) {
+                groupService.disable(groupEntity.getId());
+            }
+        }
+
+        trainingInstructorRepository.deleteByTrainingId(trainingEntity.getId());
+        return ResponseEntity.ok().body(trainingMapper.mapsEntityToDto(trainingRepository.save(trainingEntity), trainingDto));
     }
 }

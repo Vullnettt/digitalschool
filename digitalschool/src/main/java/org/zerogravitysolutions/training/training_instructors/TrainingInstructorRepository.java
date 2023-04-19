@@ -4,4 +4,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface TrainingInstructorRepository extends JpaRepository<TrainingInstructor, Long> {
     void deleteByInstructorId(Long id);
+    void deleteByTrainingId(Long id);
 }
