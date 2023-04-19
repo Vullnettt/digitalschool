@@ -5,12 +5,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.server.ResponseStatusException;
 import org.zerogravitysolutions.client.EmailFeignClient;
@@ -22,6 +20,7 @@ import org.zerogravitysolutions.training.training_instructors.TrainingInstructor
 
 import java.io.IOException;
 import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -103,7 +102,7 @@ public class InstructorServiceImpl implements InstructorService{
         LOGGER.info("Disable instructor with id {}", instructorEntity.getId());
 
         emailFeignClient.send("[" + '"' + instructorEntity.getEmail() + '"' + "]", "You are disabled from training",
-                messageBody(id, disableReason), null, null, null);
+                messageBodyDisable(id, disableReason), null, null, null);
 
         LOGGER.info("Sending email to {}", instructorEntity.getEmail());
         groupInstructorRepository.deleteByInstructorId(id);
@@ -113,7 +112,7 @@ public class InstructorServiceImpl implements InstructorService{
         return ResponseEntity.ok().body(instructorMapper.mapEntityToDto(instructorRepository.save(instructorEntity)));
     }
 
-    private String messageBody(Long id, DisableReason disableReason){
+    private String messageBodyDisable(Long id, DisableReason disableReason){
         InstructorEntity instructorEntity = instructorRepository.findById(id).get();
         String messageBody = "Dear: " + instructorEntity.getFirstName() +
                 "\n\nReason why you are suspended from training as instructor: " +
@@ -154,5 +153,38 @@ public class InstructorServiceImpl implements InstructorService{
         }else{
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Failed to load instructor profile picture image for student id: " + id);
         }
+    }
+
+    @Override
+    public ResponseEntity<?> enable(Long id) {
+        InstructorEntity instructorEntity = instructorRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Instructor with id: " + id + " not found"));
+
+        if(instructorEntity.getDeletedAt() == null || instructorEntity.getDeletedBy() == null){
+            return ResponseEntity.ok().body("Instructor is already enabled");
+        }
+
+        emailFeignClient.send("[" + '"' + instructorEntity.getEmail() + '"' + "]", "You are enable",
+                messageBodyEnable(id), null, null, null);
+
+        instructorEntity.setDeletedAt(null);
+        instructorEntity.setDeletedBy(null);
+
+        return ResponseEntity.ok().body(instructorMapper.mapEntityToDto(instructorRepository.save(instructorEntity)));
+    }
+
+    private String messageBodyEnable(Long id){
+        InstructorEntity instructorEntity = instructorRepository.findById(id).get();
+        Long hour = Long.valueOf(LocalDateTime.now().getHour() - instructorEntity.getDeletedAt().toLocalDateTime().getHour());;
+        Long minute = Long.valueOf(LocalDateTime.now().getMinute() - instructorEntity.getDeletedAt().toLocalDateTime().getMinute());
+        Long second = Long.valueOf(LocalDateTime.now().getSecond() - instructorEntity.getDeletedAt().toLocalDateTime().getSecond());;
+        String now = String.valueOf("Date: " + LocalDateTime.now().getYear() + "-" + LocalDateTime.now().getMonth() + "-" + LocalDateTime.now().getDayOfMonth() +
+                "  Time: " + LocalDateTime.now().getHour() + ":" + LocalDateTime.now().getMinute() + ":" + LocalDateTime.now().getSecond());
+        String messageBody = "Dear: " + instructorEntity.getFirstName() +
+                "\n\nYou are a enabled student\n " +
+                "\nEnabled in: " + now +
+                "\nYou was disabled for: " + hour + ":" + minute + ":" + second;
+
+        return messageBody;
     }
 }

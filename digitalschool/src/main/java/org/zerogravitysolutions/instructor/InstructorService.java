@@ -23,4 +23,6 @@ public interface InstructorService {
     ResponseEntity<InstructorDto> uploadProfilePicture(Long id, MultipartFile file);
 
     ResponseEntity<Resource> readProfilePicture(Long id);
+
+    ResponseEntity<?> enable(Long id);
 }
