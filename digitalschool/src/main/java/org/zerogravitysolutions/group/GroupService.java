@@ -20,4 +20,6 @@ public interface GroupService {
     ResponseEntity<GroupDto> addInstructor(Long groupId, Long instructorId);
 
     ResponseEntity<GroupDto> disable(Long id);
+
+    ResponseEntity<?> enable(Long id);
 }

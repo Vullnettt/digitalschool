@@ -241,4 +241,23 @@ public class TrainingServiceImpl implements TrainingService {
         trainingInstructorRepository.deleteByTrainingId(trainingEntity.getId());
         return ResponseEntity.ok().body(trainingMapper.mapsEntityToDto(trainingRepository.save(trainingEntity), trainingDto));
     }
+
+    @Override
+    public ResponseEntity<?> enable(Long id) {
+        TrainingEntity trainingEntity = trainingRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Training with id: " + id + " not found"));
+
+        if(trainingEntity.getDeletedAt() == null || trainingEntity.getDeletedBy() == null){
+            return ResponseEntity.ok().body("Training is already enabled");
+        }
+
+        trainingEntity.setDeletedAt(null);
+        trainingEntity.setDeletedBy(null);
+        for(GroupEntity groupEntity : trainingEntity.getGroups()){
+            if(groupEntity.getDeletedAt() != null) {
+                groupService.enable(groupEntity.getId());
+            }
+        }
+        return ResponseEntity.ok().body(trainingMapper.mapEntityToDto(trainingRepository.save(trainingEntity)));
+    }
 }

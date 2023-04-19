@@ -33,4 +33,6 @@ public interface TrainingService {
     Page<TrainingDto> findAllPageable(Pageable pageable);
 
     ResponseEntity<TrainingDto> disable(Long id);
+
+    ResponseEntity<?> enable(Long id);
 }

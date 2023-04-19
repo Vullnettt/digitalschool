@@ -203,4 +203,19 @@ public class GroupServiceImpl implements GroupService {
         groupMapper.mapDtoToEntity(groupDto, groupEntity);
         return ResponseEntity.ok().body(groupMapper.mapsEntityToDto(groupRepository.save(groupEntity), groupDto));
     }
+
+    @Override
+    public ResponseEntity<?> enable(Long id) {
+        GroupEntity groupEntity = groupRepository.findById(id).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Group with id: " + id + " not found"));
+
+        if(groupEntity.getDeletedAt() == null || groupEntity.getDeletedBy() == null){
+            return ResponseEntity.ok().body("Group is already enabled");
+        }
+
+        groupEntity.setDeletedAt(null);
+        groupEntity.setDeletedBy(null);
+
+        return ResponseEntity.ok().body(groupMapper.mapEntityToDto(groupRepository.save(groupEntity)));
+    }
 }
